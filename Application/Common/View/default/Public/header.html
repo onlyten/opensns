@@ -1,0 +1,256 @@
+<include file="Public/right_chat_panel"/>
+
+<php> D('Common/Member')->need_login();</php>
+
+<!--[if lt IE 8]>
+
+<div class="alert alert-danger" style="margin-bottom: 0">{:L('_TIP_BROWSER_DEPRECATED_1_')} <strong>{:L('_TIP_BROWSER_DEPRECATED_2_')}</strong>
+
+    {:L('_TIP_BROWSER_DEPRECATED_3_')} <a target="_blank"
+
+                                          href="http://browsehappy.com/">{:L('_TIP_BROWSER_DEPRECATED_4_')}</a>
+
+    {:L('_TIP_BROWSER_DEPRECATED_5_')}
+
+</div>
+
+<![endif]-->
+
+<script src="__PUBLIC__/js/canvas.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('[data-role="show_hide"]').click(function () {
+
+            $("#search_box").slideToggle("slow");
+
+        });
+
+        $('[data-role="close"]').click(function () {
+
+            $("#search_box").slideToggle("slow");
+
+        });
+
+        });
+
+
+
+</script>
+
+<div class="container-fluid topp-box" style="background-color:white;height:60px;">
+<div class="container" style="max-width:1440px;height:0">
+    <div>
+
+        <div class="img-wrap">
+
+            <php>$logo = get_cover(modC('LOGO',0,'Config'),'path');
+
+                $logo = $logo?$logo:'__ROOT__/Public/images/logo.png';
+
+            </php>
+
+            <a class="navbar-brand logo" href="{:U('Home/Index/index')}" style="padding-left:0px;"><img src="{$logo}"/></a>
+
+        </div>
+
+    </div>
+
+    <div>
+
+    </div>
+
+    <div class="box c-b-right" style="text-align: right">
+
+        <if condition="is_login()">
+
+            <li class="dropdown li-hover self-info">
+
+                <php>
+
+                    $uid = is_login();
+
+                    $reg_time = D('member')->where(array('uid' => $uid))->getField('reg_time');
+
+                    $reg_date = date('Y-m-d', $reg_time);
+
+                    $self = query_user(array('title', 'avatar128', 'nickname', 'uid', 'space_url', 'score', 'title', 'fans', 'following', 'weibocount', 'rank_link'));
+
+                    //获取用户封面id
+
+                    $map = getUserConfigMap('user_cover');
+
+                    $map['role_id'] = 0;
+
+                    $model = D('Ucenter/UserConfig');
+
+                    $cover = $model->findData($map);
+
+                    $self['cover_id'] = $cover['value'];
+
+                    $self['cover_path'] = getThumbImageById($cover['value'], 273, 80);
+
+                </php>
+            </li>
+                <style type="text/css">
+                    #nickname{
+                        color: #000;
+                    }
+                    #nick{
+                        color: #000;
+                    }
+                    #nickname:hover {
+                        color: #fff !important; 
+                    }
+                    #nick:hover {
+                        color: #fff !important; 
+                    }
+                </style>
+
+                <li class="li-hover">
+                    <a id="nick" href="{:U('ucenter/message/message')}" style="margin-top:7px" target="_blank">
+                        <i class="os-icon-bell"></i>
+                    </a>
+                    <a id="nick" href="javascript:" id="show_box" data-role="show_hide">
+                        <i class="icon-search"></i>
+                    </a>
+                </li>
+
+
+                <li class="dropdown-toggle dropdown-toggle-avatar li-hover show-hide-ul" style="margin-top:7px">
+                    <a id="nickname" title="{:L('_EDIT_INFO_')}" href="#" data-toggle="dropdown" >
+                        <span>{$self.nickname}</span>
+                    </a>
+                    <ul class="dropdown-menu  drop-self nav-menu" role="menu">
+                        <div style="cursor: pointer" event-node="logout" >
+                            <center>
+                                    <i class="os-icon-logout"></i>
+                                    退出登录
+                            </center>
+                        </div>
+                    </ul>
+                </li>
+
+                
+
+            <else/>
+
+            <php>
+
+                $open_quick_login=modC('OPEN_QUICK_LOGIN', 0, 'USERCONFIG');
+
+                $register_type=modC('REGISTER_TYPE','normal','Invite');
+
+                $register_type=explode(',',$register_type);
+
+                $only_open_register=0;
+
+                if(in_array('invite',$register_type)&&!in_array('normal',$register_type)){
+
+                $only_open_register=1;
+
+                }
+
+            </php>
+
+            <script>
+
+                var OPEN_QUICK_LOGIN = "{$open_quick_login}";
+
+                var ONLY_OPEN_REGISTER = "{$only_open_register}";
+
+            </script>
+
+                <!-- <a class="top-btn" data-login="do_login">{:L('_LOGIN_')}</a>
+
+                <a class="top-btn" data-role="do_register" data-url="{:U('Ucenter/Member/register')}">{:L('_REGISTER_')}</a> -->
+
+        </if>
+
+    </div>
+
+    <div class="container-fluid search-box" id="search_box" style="display: none">
+
+        <canvas width="1835" height="374"></canvas>
+
+        <div class="text-wrap">
+
+            <div class="container text-box" style="margin: 0 auto!important;">
+
+                <h1>无处不在,搜你所想</h1>
+
+                <form class="navbar-form " action="{:U('Home/Index/search')}" method="post"
+
+                      role="search" id="search">
+
+                    <div class="search">
+
+                        <span class="pull-left"><input type="text" name="keywords" class="input" placeholder="搜索同校好友"></span>
+
+                        <a data-role="search"><i class="icon icon-search pull-right"></i></a>
+
+                    </div>
+
+
+
+                    </span>
+
+                </form>
+
+
+
+            </div>
+
+            <div class="close-box" data-role="close">X</div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+
+<div style="height:12px;">
+    
+</div>
+
+
+
+<include file="Public/_system"/>
+
+
+
+
+
+<script>
+
+    $(function() {
+
+        $('[data-role="search"]').click(function() {
+
+            $("#search").submit();
+
+        })
+
+    })
+
+
+
+    function displaySubMenu(li) {
+
+        var subMenu = li.getElementsByTagName("ul")[0];
+
+        subMenu.style.display = "block";
+
+    }
+
+    function hideSubMenu(li) {
+
+        var subMenu = li.getElementsByTagName("ul")[0];
+
+        subMenu.style.display = "none";
+
+    }
+
+</script>

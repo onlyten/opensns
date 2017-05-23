@@ -1,0 +1,127 @@
+<div style="max-width: 680px;margin-bottom: 10px;<if condition="$top_hide">display:none</if>" data-role="id_weibo" id="weibo_{$weibo.id}" <if condition="$can_hide">class="top_can_hide"<else/>class=""</if> >
+    <div class="all-wrap">
+        <if condition="$weibo['is_hot'] eq 1">
+            <div class="hot-comment-weibo"></div>
+            <elseif condition="$weibo['is_first'] eq 1"/>
+            <div class="new-user-first-weibo"></div>
+        </if>
+        <div class="weibo-content">
+            <div class="content-head">
+                <div class="avat-box pull-left">
+                    <a href="{$weibo.user.space_url}" ucard="{$weibo.user.uid}">
+                        <img src="{$weibo.user.avatar128}" class="avatar-img"/>
+                    </a>
+                    <div class="show-follow pull-right">
+                        <if condition="$can_hide && !$sign">
+                            <div class="follow-btn" style="display: none;">
+                                {:W('Common/Follow/follow',array('follow_who'=>$weibo['uid']))}
+                            </div>
+                        </if>
+                        <if condition="!$can_hide">
+                            <div class="follow-btn" style="display: none;">
+                                [follow:{$weibo['uid']}]
+                            </div>
+                        </if>
+                    </div>
+                </div>
+                <div class="op-box pull-right">
+                    <div class="op-tb op-top">
+                        <a ucard="{$weibo.user.uid}" href="{$weibo.user.space_url}" class="user_name">
+                            <if condition="$can_hide">
+                                {$weibo.user.nickname}
+                                <else/>
+                                [nickname:{$weibo['uid']}]
+                            </if>
+                        </a>
+                        <if condition="modC('SHOW_TITLE',1)">
+                            <small class="font_grey">{$weibo.user.title}</small>
+                        </if>
+                        {:W('Common/UserRank/render',array($weibo['uid']))}
+                        <!--隐藏操作列表-->
+                        <div class="pull-right show-operate-wrap">
+                            <a href="javascript:" class="show-operate pull-right icon-angle-down"></a>
+                            <div class="operate-box" >
+                                <if condition="check_auth('Weibo/Index/setTop')">
+                                    <eq name="weibo.is_top" value="0">
+                                        <li data-weibo-id="{$weibo.id}" title="{:L('_SET_TOP_')}" data-role="weibo_set_top">
+                                            置顶
+                                        </li>
+                                        <else/>
+                                        <li data-weibo-id="{$weibo.id}" title="{:L('_CANCEL_TOP_')}" data-role="weibo_set_top">
+                                            取消置顶
+                                        </li>
+                                    </eq>
+                                </if>
+                                <if condition="$weibo['can_delete']">
+                                    <li data-weibo-id="{$weibo.id}" title="{:L('_DELETE_')}" data-role="del_weibo">
+                                        删除
+                                    </li>
+                                </if>
+                                <if condition="$can_hide">
+                                    <li data-weibo-id="{$weibo.id}" title="{:L('_HIDE_TOP_')}" data-role="hide_top_weibo">
+                                        隐藏
+                                    </li>
+                                </if>
+                                <li>{:hook('report',array('type'=>$MODULE_ALIAS.'/'.$MODULE_ALIAS,'url'=>"Weibo/Index/weiboDetail?id=$weibo[id]",'data'=>array('weibo-id'=>$weibo['id'])))}</li>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op-tb op-bottom">
+                        <a data-hover="查看详情" class="wb-time" href="{:U('Weibo/Index/weiboDetail',array('id'=>$weibo['id']))}">
+                            <if condition="$can_hide">
+                                {$weibo.create_time|friendlyDate}
+                                <else/>
+                                [time:{$weibo.create_time}]
+                            </if>
+                        </a>
+                    </div>
+                </div>
+                <eq name="weibo.is_top" value="1">
+                    <div class="ribbion-green"></div>
+                </eq>
+            </div>
+            <div class="content-info row">
+                {$weibo.fetchContent}
+                <div class="form-where">
+                    <div class="where w-left">
+                        <span>{:L('_FROM_')} <if condition="$weibo['from'] eq ''">{:L('_PC_')} <else/><strong>{$weibo.from}</strong></if></span>
+                        <span>{:hook('giveReward',array('type'=>$MODULE_ALIAS.'/'.$MODULE_ALIAS,'url'=>"Weibo/Index/weiboDetail?id=$weibo[id]",'data'=>array('user-id'=>$weibo['user']['uid'])))}</span>
+                    </div>
+                    <div class="where w-right  bottom-operate" data-weibo-id="{$weibo.id}">
+                        <php>
+                            $weiboCommentTotalCount = $weibo['comment_count'];
+                        </php>
+                        <include file="./Application/Weibo/View/default/Index/_operation.html"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    <div class="weibo-comment-list row" <if condition="modC('SHOW_COMMENT',1)">style="display: block;margin:0;" <else/> style="display: none;" </if> data-weibo-id="{$weibo.id}">
+    <if condition="modC('SHOW_COMMENT',1)">
+        <div class=" weibo-comment-block">
+            <div class="weibo-comment-container">
+                {:W('Weibo/Comment/someComment',array('weibo_id'=>$weibo['id'],'un_prase_comment'=>$un_prase_comment))}
+            </div>
+        </div>
+    </if>
+    </div>
+    </div>
+</if>
+<style>
+    .suofang {MARGIN: auto;WIDTH: 200px;}
+    .suofang img{MAX-WIDTH: 100%!important;HEIGHT: auto!important;width:expression(this.width > 300 ? "300px" :this.width)!important;}
+</style>
+<script>
+    $(function(){
+        $('[data-role="id_weibo"]').mouseover(function(){
+            var id = $(this).attr('id');
+            $(this).find(".follow-btn").css("display", "inline-block");
+        })
+        $('[data-role="id_weibo"]').mouseout(function(){
+            $(".follow-btn").css("display", "none");
+        })
+    });
+    // alert($('.weibo-comment-container').text());
+</script>
