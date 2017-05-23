@@ -3,7 +3,7 @@ namespace Api\Controller;
 use Think\Controllerr;
 class SnewsController extends Controllerr {
 	private $page;//页数
-	private $page_num = 2;//每一页显示的数量
+	private $page_num = 8;//每一页显示的数量
 	public function __construct(){
 		$token = I("get.accessToken");
 		if ($this->check($token)){//判断登录态
