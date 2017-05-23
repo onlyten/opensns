@@ -478,6 +478,7 @@ class SnewsController extends Controllerr {
 			$all = M("")->query("SELECT
 									ocenter_support.id,
 									ocenter_member.nickname,
+									ocenter_member.uid,
 									CASE
 								WHEN ISNULL(ocenter_avatar.path) THEN
 									'$s/Public/images/default_avatar.jpg'
@@ -497,10 +498,14 @@ class SnewsController extends Controllerr {
 								ORDER BY
 									ocenter_support.create_time DESC LIMIT $this->page,$this->page_num"
 								);
+			$num = count($all);
+			for ($i=0; $i < $num; $i++) { 
+				$all[$i]['updateDate'] = $this->update_time($all[$i]['uid']);
+			}
 			if ($all) {
 				$parent['code'] = 0;
 				$parent['msg'] = "成功";
-				$parent['last_id'] = $all[count($all)-1]['id'];
+				$parent['last_id'] = $all[$num-1]['id'];
 				$parent['data'] = $all;
 			} else {
 				$parent['code'] = -1;
@@ -1087,12 +1092,14 @@ class SnewsController extends Controllerr {
 			if (I('get.last_id')) {
 				$map['id'] = array('lt',I('get.last_id'));
 			}
-			$weibo_id = M('weibo_comment')->where($map)->order('id desc')->field('id,weibo_id,content')->limit($this->page_num)->select();
+			$weibo_id = M('weibo_comment')->where($map)->order('id desc')->field('id,weibo_id,content,create_time')->limit($this->page_num)->select();
 			$num = count($weibo_id);
 			if ($num) {
 				for ($i=0; $i < $num; $i++) { 
 					$all[$i] = $this->wb_one($weibo_id[$i]['weibo_id']);
 					$all[$i]['id'] = $weibo_id[$i]['id'];
+					$all[$i]['comment_content'] = $weibo_id[$i]['content'];
+					$all[$i]['comment_time'] = $weibo_id[$i]['create_time'];
 				}
 				$parent['code'] = 0;
 				$parent['msg'] = '成功';
